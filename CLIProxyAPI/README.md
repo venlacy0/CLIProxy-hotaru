@@ -55,10 +55,60 @@ Get 10% OFF GLM CODING PLAN：https://z.ai/subscribe?ic=8JVLJQFSKB
 - OpenAI Codex multi-account load balancing
 - OpenAI-compatible upstream providers via config (e.g., OpenRouter)
 - Reusable Go SDK for embedding the proxy (see `docs/sdk-usage.md`)
+- **Donation Site** - Linux Do OAuth login with New-API integration for quota management
 
 ## Getting Started
 
 CLIProxyAPI Guides: [https://help.router-for.me/](https://help.router-for.me/)
+
+## Donation Site
+
+CLIProxyAPI includes a built-in donation site feature that allows users to:
+
+- Login via Linux Do Connect OAuth
+- Bind their New-API user account
+- Receive quota rewards after donation confirmation
+
+### Configuration
+
+Add the following to your `config.yaml`:
+
+```yaml
+linux-do-connect:
+  client-id: "your-client-id"
+  client-secret: "your-client-secret"
+  redirect-uri: "https://your-domain.com/linuxdo/callback"
+
+donation:
+  quota-amount: 2000000  # $20 in quota units
+  admin-linux-do-ids:
+    - 12345  # Admin user Linux Do IDs
+```
+
+Set environment variables:
+
+```bash
+NEW_API_BASE_URL=https://your-newapi-instance.com
+NEW_API_ADMIN_TOKEN=your-admin-token
+```
+
+### Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | GET | Main donation site page |
+| `/linuxdo/login` | GET | Initiate Linux Do OAuth login |
+| `/linuxdo/callback` | GET | OAuth callback handler |
+| `/status` | GET | Get current login status |
+| `/bind` | GET/POST | View/submit New-API account binding |
+| `/donate` | GET | View donation info |
+| `/donate/confirm` | POST | Confirm donation and receive quota |
+| `/logout` | POST | Logout and clear session |
+
+### Access Control
+
+- Admin users (configured via `admin-linux-do-ids`) have full access to auth file management
+- Regular users are restricted from auth file operations (403 Forbidden)
 
 ## Management API
 
@@ -91,7 +141,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
+4. Push to the branch (`git push origin feature-amazing-feature`)
 5. Open a Pull Request
 
 ## Who is with us?

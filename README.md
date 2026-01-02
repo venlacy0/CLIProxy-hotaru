@@ -1,77 +1,181 @@
 # CLI Proxy API
 
-English | [中文](README_CN.md)
+[English](README_EN.md) | 中文
 
-A proxy server that provides OpenAI/Gemini/Claude/Codex compatible API interfaces for CLI.
+一个为 CLI 提供 OpenAI/Gemini/Claude/Codex 兼容 API 接口的代理服务器。
 
-It now also supports OpenAI Codex (GPT models) and Claude Code via OAuth.
+支持通过 OAuth 登录使用 OpenAI Codex (GPT 模型) 和 Claude Code。
 
-So you can use local or multi-account CLI access with OpenAI(include Responses)/Gemini/Claude-compatible clients and SDKs.
+可以使用本地或多账户 CLI 访问 OpenAI(包括 Responses)/Gemini/Claude 兼容的客户端和 SDK。
 
-## Sponsor
+## 功能概览
 
-[![z.ai](https://assets.router-for.me/english-4.7.png)](https://z.ai/subscribe?ic=8JVLJQFSKB)
+- CLI 模型的 OpenAI/Gemini/Claude 兼容 API 端点
+- 通过 OAuth 登录支持 OpenAI Codex (GPT 模型)
+- 通过 OAuth 登录支持 Claude Code
+- 通过 OAuth 登录支持 Qwen Code
+- 通过 OAuth 登录支持 iFlow
+- 支持 Amp CLI 和 IDE 扩展的提供商路由
+- 流式和非流式响应
+- 函数调用/工具支持
+- 多模态输入支持（文本和图像）
+- 多账户轮询负载均衡（Gemini、OpenAI、Claude、Qwen 和 iFlow）
+- 简单的 CLI 认证流程
+- Generative Language API Key 支持
+- 多账户负载均衡
+- 通过配置支持 OpenAI 兼容的上游提供商
+- 可复用的 Go SDK 用于嵌入代理
+- **捐赠站点** - Linux Do OAuth 登录与 New-API 集成的额度管理
 
-This project is sponsored by Z.ai, supporting us with their GLM CODING PLAN.
+## 部署教程
 
-GLM CODING PLAN is a subscription service designed for AI coding, starting at just $3/month. It provides access to their flagship GLM-4.7 model across 10+ popular AI coding tools (Claude Code, Cline, Roo Code, etc.), offering developers top-tier, fast, and stable coding experiences.
+### 方式一：Docker Compose 部署（推荐）
 
-Get 10% OFF GLM CODING PLAN：https://z.ai/subscribe?ic=8JVLJQFSKB
+1. 克隆仓库并进入目录：
 
----
+```bash
+git clone https://github.com/router-for-me/CLIProxyAPI.git
+cd CLIProxyAPI
+```
 
-<table>
-<tbody>
-<tr>
-<td width="180"><a href="https://www.packyapi.com/register?aff=cliproxyapi"><img src="./assets/packycode.png" alt="PackyCode" width="150"></a></td>
-<td>Thanks to PackyCode for sponsoring this project! PackyCode is a reliable and efficient API relay service provider, offering relay services for Claude Code, Codex, Gemini, and more. PackyCode provides special discounts for our software users: register using <a href="https://www.packyapi.com/register?aff=cliproxyapi">this link</a> and enter the "cliproxyapi" promo code during recharge to get 10% off.</td>
-</tr>
-<tr>
-<td width="180"><a href="https://cubence.com/signup?code=CLIPROXYAPI&source=cpa"><img src="./assets/cubence.png" alt="Cubence" width="150"></a></td>
-<td>Thanks to Cubence for sponsoring this project! Cubence is a reliable and efficient API relay service provider, offering relay services for Claude Code, Codex, Gemini, and more. Cubence provides special discounts for our software users: register using <a href="https://cubence.com/signup?code=CLIPROXYAPI&source=cpa">this link</a> and enter the "CLIPROXYAPI" promo code during recharge to get 10% off.</td>
-</tr>
-</tbody>
-</table>
+2. 复制配置文件：
 
-## Overview
+```bash
+cp config.example.yaml config.yaml
+```
 
-- OpenAI/Gemini/Claude compatible API endpoints for CLI models
-- OpenAI Codex support (GPT models) via OAuth login
-- Claude Code support via OAuth login
-- Qwen Code support via OAuth login
-- iFlow support via OAuth login
-- Amp CLI and IDE extensions support with provider routing
-- Streaming and non-streaming responses
-- Function calling/tools support
-- Multimodal input support (text and images)
-- Multiple accounts with round-robin load balancing (Gemini, OpenAI, Claude, Qwen and iFlow)
-- Simple CLI authentication flows (Gemini, OpenAI, Claude, Qwen and iFlow)
-- Generative Language API Key support
-- AI Studio Build multi-account load balancing
-- Gemini CLI multi-account load balancing
-- Claude Code multi-account load balancing
-- Qwen Code multi-account load balancing
-- iFlow multi-account load balancing
-- OpenAI Codex multi-account load balancing
-- OpenAI-compatible upstream providers via config (e.g., OpenRouter)
-- Reusable Go SDK for embedding the proxy (see `docs/sdk-usage.md`)
-- **Donation Site** - Linux Do OAuth login with New-API integration for quota management
+3. 编辑 `config.yaml`，配置必要参数：
 
-## Getting Started
+```yaml
+# 服务端口
+port: 8317
 
-CLIProxyAPI Guides: [https://help.router-for.me/](https://help.router-for.me/)
+# API 密钥（用于客户端认证）
+api-keys:
+  - "your-api-key-1"
 
-## Donation Site
+# 认证文件目录
+auth-dir: "~/.cli-proxy-api"
+```
 
-CLIProxyAPI includes a built-in donation site feature that allows users to:
+4. 启动服务：
 
-- Login via Linux Do Connect OAuth
-- Bind their New-API user account
-- Receive quota rewards after donation confirmation
+```bash
+docker-compose up -d
+```
 
-### Configuration
+5. 查看日志：
 
-Add the following to your `config.yaml`:
+```bash
+docker-compose logs -f
+```
+
+### 方式二：二进制部署
+
+1. 从 [Releases](https://github.com/router-for-me/CLIProxyAPI/releases) 下载对应平台的二进制文件
+
+2. 创建配置文件 `config.yaml`（参考 `config.example.yaml`）
+
+3. 运行：
+
+```bash
+./CLIProxyAPI
+```
+
+### 方式三：源码编译
+
+1. 确保已安装 Go 1.24+
+
+2. 克隆并编译：
+
+```bash
+git clone https://github.com/router-for-me/CLIProxyAPI.git
+cd CLIProxyAPI
+go build -o CLIProxyAPI ./cmd/server/
+```
+
+3. 运行：
+
+```bash
+./CLIProxyAPI
+```
+
+## 端口说明
+
+| 端口 | 用途 |
+|------|------|
+| 8317 | 主 API 服务端口 |
+| 8085 | 管理面板端口 |
+| 1455 | Claude Code 端口 |
+| 54545 | Gemini CLI 端口 |
+| 51121 | Qwen Code 端口 |
+| 11451 | iFlow 端口 |
+
+## 配置说明
+
+### 基础配置
+
+```yaml
+# 服务绑定地址，留空绑定所有接口
+host: ""
+
+# 服务端口
+port: 8317
+
+# TLS 配置（可选）
+tls:
+  enable: false
+  cert: ""
+  key: ""
+
+# API 密钥列表
+api-keys:
+  - "your-api-key-1"
+  - "your-api-key-2"
+
+# 认证文件目录
+auth-dir: "~/.cli-proxy-api"
+
+# 调试模式
+debug: false
+```
+
+### 管理 API 配置
+
+```yaml
+remote-management:
+  # 是否允许远程访问管理 API
+  allow-remote: false
+  # 管理密钥（必填，否则管理 API 不可用）
+  secret-key: "your-secret-key"
+  # 禁用控制面板
+  disable-control-panel: false
+```
+
+### 代理配置
+
+```yaml
+# 全局代理 URL（支持 socks5/http/https）
+proxy-url: "socks5://user:pass@192.168.1.1:1080"
+
+# 请求重试次数
+request-retry: 3
+
+# 最大重试等待时间（秒）
+max-retry-interval: 30
+```
+
+## 捐赠站点
+
+CLIProxyAPI 内置捐赠站点功能，允许用户：
+
+- 通过 Linux Do Connect OAuth 登录
+- 绑定 New-API 用户账户
+- 确认捐赠后获得额度奖励
+
+### 捐赠站点配置
+
+在 `config.yaml` 中添加：
 
 ```yaml
 linux-do-connect:
@@ -80,97 +184,71 @@ linux-do-connect:
   redirect-uri: "https://your-domain.com/linuxdo/callback"
 
 donation:
-  quota-amount: 2000000  # $20 in quota units
+  quota-amount: 2000000  # 额度单位，2000000 = $20
   admin-linux-do-ids:
-    - 12345  # Admin user Linux Do IDs
+    - 12345  # 管理员的 Linux Do ID
 ```
 
-Set environment variables:
+设置环境变量（或在 `.env` 文件中）：
 
 ```bash
 NEW_API_BASE_URL=https://your-newapi-instance.com
 NEW_API_ADMIN_TOKEN=your-admin-token
 ```
 
-### Endpoints
+### 捐赠站点 API 端点
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/` | GET | Main donation site page |
-| `/linuxdo/login` | GET | Initiate Linux Do OAuth login |
-| `/linuxdo/callback` | GET | OAuth callback handler |
-| `/status` | GET | Get current login status |
-| `/bind` | GET/POST | View/submit New-API account binding |
-| `/donate` | GET | View donation info |
-| `/donate/confirm` | POST | Confirm donation and receive quota |
-| `/logout` | POST | Logout and clear session |
+| 端点 | 方法 | 描述 |
+|------|------|------|
+| `/` | GET | 捐赠站点主页 |
+| `/linuxdo/login` | GET | 发起 Linux Do OAuth 登录 |
+| `/linuxdo/callback` | GET | OAuth 回调处理 |
+| `/status` | GET | 获取当前登录状态 |
+| `/bind` | GET/POST | 查看/提交 New-API 账户绑定 |
+| `/donate` | GET | 查看捐赠信息 |
+| `/donate/confirm` | POST | 确认捐赠并获得额度 |
+| `/logout` | POST | 退出登录并清除会话 |
 
-### Access Control
+### 访问控制
 
-- Admin users (configured via `admin-linux-do-ids`) have full access to auth file management
-- Regular users are restricted from auth file operations (403 Forbidden)
+- 管理员用户（通过 `admin-linux-do-ids` 配置）拥有 auth 文件管理的完整权限
+- 普通用户无法访问 auth 文件操作（返回 403 Forbidden）
 
-## Management API
+## 环境变量
 
-see [MANAGEMENT_API.md](https://help.router-for.me/management/api)
+| 变量名 | 描述 |
+|--------|------|
+| `DEPLOY` | 部署标识 |
+| `NEW_API_BASE_URL` | New-API 服务地址 |
+| `NEW_API_ADMIN_TOKEN` | New-API 管理员令牌 |
 
-## Amp CLI Support
+## 目录结构
 
-CLIProxyAPI includes integrated support for [Amp CLI](https://ampcode.com) and Amp IDE extensions, enabling you to use your Google/ChatGPT/Claude OAuth subscriptions with Amp's coding tools:
+```
+CLIProxyAPI/
+├── config.yaml          # 配置文件
+├── auths/               # OAuth 认证文件目录
+├── logs/                # 日志目录
+└── CLIProxyAPI          # 可执行文件
+```
 
-- Provider route aliases for Amp's API patterns (`/api/provider/{provider}/v1...`)
-- Management proxy for OAuth authentication and account features
-- Smart model fallback with automatic routing
-- **Model mapping** to route unavailable models to alternatives (e.g., `claude-opus-4.5` → `claude-sonnet-4`)
-- Security-first design with localhost-only management endpoints
+## SDK 文档
 
-**→ [Complete Amp CLI Integration Guide](https://help.router-for.me/agent-client/amp-cli.html)**
+- 使用说明：[docs/sdk-usage_CN.md](docs/sdk-usage_CN.md)
+- 高级用法：[docs/sdk-advanced_CN.md](docs/sdk-advanced_CN.md)
+- 访问控制：[docs/sdk-access_CN.md](docs/sdk-access_CN.md)
+- 监视器：[docs/sdk-watcher_CN.md](docs/sdk-watcher_CN.md)
 
-## SDK Docs
+## 贡献
 
-- Usage: [docs/sdk-usage.md](docs/sdk-usage.md)
-- Advanced (executors & translators): [docs/sdk-advanced.md](docs/sdk-advanced.md)
-- Access: [docs/sdk-access.md](docs/sdk-access.md)
-- Watcher: [docs/sdk-watcher.md](docs/sdk-watcher.md)
-- Custom Provider Example: `examples/custom-provider`
+欢迎贡献！请随时提交 Pull Request。
 
-## Contributing
+1. Fork 本仓库
+2. 创建你的功能分支（`git checkout -b feature/amazing-feature`）
+3. 提交你的更改（`git commit -m 'Add some amazing feature'`）
+4. 推送到分支（`git push origin feature/amazing-feature`）
+5. 开启 Pull Request
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+## 许可证
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature-amazing-feature`)
-5. Open a Pull Request
-
-## Who is with us?
-
-Those projects are based on CLIProxyAPI:
-
-### [vibeproxy](https://github.com/automazeio/vibeproxy)
-
-Native macOS menu bar app to use your Claude Code & ChatGPT subscriptions with AI coding tools - no API keys needed
-
-### [Subtitle Translator](https://github.com/VjayC/SRT-Subtitle-Translator-Validator)
-
-Browser-based tool to translate SRT subtitles using your Gemini subscription via CLIProxyAPI with automatic validation/error correction - no API keys needed
-
-### [CCS (Claude Code Switch)](https://github.com/kaitranntt/ccs)
-
-CLI wrapper for instant switching between multiple Claude accounts and alternative models (Gemini, Codex, Antigravity) via CLIProxyAPI OAuth - no API keys needed
-
-### [ProxyPal](https://github.com/heyhuynhgiabuu/proxypal)
-
-Native macOS GUI for managing CLIProxyAPI: configure providers, model mappings, and endpoints via OAuth - no API keys needed.
-
-### [Quotio](https://github.com/nguyenphutrong/quotio)
-
-Native macOS menu bar app that unifies Claude, Gemini, OpenAI, Qwen, and Antigravity subscriptions with real-time quota tracking and smart auto-failover for AI coding tools like Claude Code, OpenCode, and Droid - no API keys needed.
-
-> [!NOTE]  
-> If you developed a project based on CLIProxyAPI, please open a PR to add it to this list.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+本项目采用 MIT 许可证 - 详见 [LICENSE](LICENSE) 文件。

@@ -102,7 +102,37 @@ type Config struct {
 	// Payload defines default and override rules for provider payload parameters.
 	Payload PayloadConfig `yaml:"payload" json:"payload"`
 
+	// LinuxDoConnect holds Linux Do Connect OAuth configuration for donation site.
+	LinuxDoConnect LinuxDoConnectConfig `yaml:"linux-do-connect" json:"linux-do-connect"`
+
+	// Donation holds donation site configuration including admin users and quota settings.
+	Donation DonationConfig `yaml:"donation" json:"donation"`
+
 	legacyMigrationPending bool `yaml:"-" json:"-"`
+}
+
+// LinuxDoConnectConfig holds Linux Do Connect OAuth configuration.
+type LinuxDoConnectConfig struct {
+	// ClientID is the OAuth client ID for Linux Do Connect.
+	ClientID string `yaml:"client-id" json:"client-id"`
+	// ClientSecret is the OAuth client secret for Linux Do Connect.
+	ClientSecret string `yaml:"client-secret" json:"client-secret"`
+	// RedirectURI is the OAuth redirect URI for Linux Do Connect callback.
+	RedirectURI string `yaml:"redirect-uri" json:"redirect-uri"`
+	// AuthURL is the OAuth authorization URL. Default: https://connect.linux.do/oauth2/authorize
+	AuthURL string `yaml:"auth-url" json:"auth-url"`
+	// TokenURL is the OAuth token exchange URL. Default: https://connect.linux.do/oauth2/token
+	TokenURL string `yaml:"token-url" json:"token-url"`
+	// UserInfoURL is the user info API URL. Default: https://connect.linux.do/api/user
+	UserInfoURL string `yaml:"userinfo-url" json:"userinfo-url"`
+}
+
+// DonationConfig holds donation site configuration.
+type DonationConfig struct {
+	// QuotaAmount is the quota amount to add for successful donations (in smallest unit, e.g., 2000000 = $20).
+	QuotaAmount int64 `yaml:"quota-amount" json:"quota-amount"`
+	// AdminLinuxDoIDs is the list of Linux Do user IDs that have admin privileges.
+	AdminLinuxDoIDs []int `yaml:"admin-linux-do-ids" json:"admin-linux-do-ids"`
 }
 
 // TLSConfig holds HTTPS server settings.

@@ -24,6 +24,7 @@ import (
 	geminiAuth "github.com/router-for-me/CLIProxyAPI/v6/internal/auth/gemini"
 	iflowauth "github.com/router-for-me/CLIProxyAPI/v6/internal/auth/iflow"
 	"github.com/router-for-me/CLIProxyAPI/v6/internal/auth/qwen"
+	"github.com/router-for-me/CLIProxyAPI/v6/internal/donation"
 	"github.com/router-for-me/CLIProxyAPI/v6/internal/interfaces"
 	"github.com/router-for-me/CLIProxyAPI/v6/internal/misc"
 	"github.com/router-for-me/CLIProxyAPI/v6/internal/registry"
@@ -252,7 +253,26 @@ func (h *Handler) managementCallbackURL(path string) (string, error) {
 	return fmt.Sprintf("%s://127.0.0.1:%d%s", scheme, h.cfg.Port, path), nil
 }
 
+// checkDonationAdminAccess checks if the request comes from a donation session
+// and if so, verifies that the user has admin role.
+// Returns true if access should be allowed, false if it should be denied.
+func checkDonationAdminAccess(c *gin.Context) bool {
+	// Check if there's a donation session in context
+	session := donation.GetSessionFromContext(c)
+	if session == nil {
+		// No donation session, allow access (original management API behavior)
+		return true
+	}
+	// If logged in via donation site, check role
+	return session.Role == donation.RoleAdmin
+}
+
 func (h *Handler) ListAuthFiles(c *gin.Context) {
+	// Check donation session role
+	if !checkDonationAdminAccess(c) {
+		c.JSON(http.StatusForbidden, gin.H{"error": "admin access required"})
+		return
+	}
 	if h == nil {
 		c.JSON(500, gin.H{"error": "handler not initialized"})
 		return
@@ -503,6 +523,11 @@ func isRuntimeOnlyAuth(auth *coreauth.Auth) bool {
 
 // Download single auth file by name
 func (h *Handler) DownloadAuthFile(c *gin.Context) {
+	// Check donation session role
+	if !checkDonationAdminAccess(c) {
+		c.JSON(http.StatusForbidden, gin.H{"error": "admin access required"})
+		return
+	}
 	name := c.Query("name")
 	if name == "" || strings.Contains(name, string(os.PathSeparator)) {
 		c.JSON(400, gin.H{"error": "invalid name"})
@@ -528,6 +553,11 @@ func (h *Handler) DownloadAuthFile(c *gin.Context) {
 
 // Upload auth file: multipart or raw JSON with ?name=
 func (h *Handler) UploadAuthFile(c *gin.Context) {
+	// Check donation session role
+	if !checkDonationAdminAccess(c) {
+		c.JSON(http.StatusForbidden, gin.H{"error": "admin access required"})
+		return
+	}
 	if h.authManager == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "core auth manager unavailable"})
 		return
@@ -594,6 +624,11 @@ func (h *Handler) UploadAuthFile(c *gin.Context) {
 
 // Delete auth files: single by name or all
 func (h *Handler) DeleteAuthFile(c *gin.Context) {
+	// Check donation session role
+	if !checkDonationAdminAccess(c) {
+		c.JSON(http.StatusForbidden, gin.H{"error": "admin access required"})
+		return
+	}
 	if h.authManager == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "core auth manager unavailable"})
 		return

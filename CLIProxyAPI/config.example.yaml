@@ -264,3 +264,20 @@ ws-auth: false
 #           protocol: "codex" # restricts the rule to a specific protocol, options: openai, gemini, claude, codex
 #       params: # JSON path (gjson/sjson syntax) -> value
 #         "reasoning.effort": "high"
+
+
+# Linux Do Connect OAuth configuration for donation site
+# linux-do-connect:
+#   client-id: "your-client-id"
+#   client-secret: "your-client-secret"
+#   redirect-uri: "http://your-domain/linuxdo/callback"
+#   auth-url: "https://connect.linux.do/oauth2/authorize"      # optional, default shown
+#   token-url: "https://connect.linux.do/oauth2/token"         # optional, default shown
+#   userinfo-url: "https://connect.linux.do/api/user"          # optional, default shown
+
+# Donation site configuration
+# donation:
+#   quota-amount: 2000000  # Amount to add for successful donations ($20 = 2000000 in smallest unit)
+#   admin-linux-do-ids:    # List of Linux Do user IDs with admin privileges
+#     - 12345
+#     - 67890

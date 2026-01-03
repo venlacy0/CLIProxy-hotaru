@@ -185,8 +185,10 @@ linux-do-connect:
 
 donation:
   quota-amount: 2000000  # 额度单位，2000000 = $20
-  admin-linux-do-ids:
-    - 12345  # 管理员的 Linux Do ID
+  admin-linux-do-ids:    # 管理员的 Linux Do 用户 ID（数字）
+    - 12345
+  admin-linux-do-usernames:  # 管理员的 Linux Do 用户名
+    - "admin_user"
 ```
 
 设置环境变量（或在 `.env` 文件中）：

@@ -1,40 +1,54 @@
 package donation
 
+import "strings"
+
 // RoleService handles role assignment for users.
 type RoleService struct {
-	adminIDs map[int]struct{}
+	adminIDs       map[int]struct{}
+	adminUsernames map[string]struct{}
 }
 
-// NewRoleService creates a new role service with the given admin user IDs.
-func NewRoleService(adminLinuxDoIDs []int) *RoleService {
+// NewRoleService creates a new role service with the given admin user IDs and usernames.
+func NewRoleService(adminLinuxDoIDs []int, adminUsernames []string) *RoleService {
 	adminIDs := make(map[int]struct{}, len(adminLinuxDoIDs))
 	for _, id := range adminLinuxDoIDs {
 		adminIDs[id] = struct{}{}
 	}
+	adminUsernameMap := make(map[string]struct{}, len(adminUsernames))
+	for _, username := range adminUsernames {
+		// Store usernames in lowercase for case-insensitive matching
+		adminUsernameMap[strings.ToLower(username)] = struct{}{}
+	}
 	return &RoleService{
-		adminIDs: adminIDs,
+		adminIDs:       adminIDs,
+		adminUsernames: adminUsernameMap,
 	}
 }
 
-// DetermineRole determines the role for a user based on their Linux Do ID.
+// DetermineRole determines the role for a user based on their Linux Do ID or username.
 // Returns "admin" if the user is in the admin list, otherwise "user".
-func (s *RoleService) DetermineRole(linuxDoID int) string {
-	if s == nil || s.adminIDs == nil {
+func (s *RoleService) DetermineRole(linuxDoID int, username string) string {
+	if s == nil {
 		return RoleUser
 	}
-	if _, isAdmin := s.adminIDs[linuxDoID]; isAdmin {
-		return RoleAdmin
+	// Check by ID first
+	if s.adminIDs != nil {
+		if _, isAdmin := s.adminIDs[linuxDoID]; isAdmin {
+			return RoleAdmin
+		}
+	}
+	// Check by username (case-insensitive)
+	if s.adminUsernames != nil && username != "" {
+		if _, isAdmin := s.adminUsernames[strings.ToLower(username)]; isAdmin {
+			return RoleAdmin
+		}
 	}
 	return RoleUser
 }
 
-// IsAdmin returns true if the given Linux Do ID belongs to an admin.
-func (s *RoleService) IsAdmin(linuxDoID int) bool {
-	if s == nil || s.adminIDs == nil {
-		return false
-	}
-	_, isAdmin := s.adminIDs[linuxDoID]
-	return isAdmin
+// IsAdmin returns true if the given Linux Do ID or username belongs to an admin.
+func (s *RoleService) IsAdmin(linuxDoID int, username string) bool {
+	return s.DetermineRole(linuxDoID, username) == RoleAdmin
 }
 
 // AddAdmin adds a user ID to the admin list.

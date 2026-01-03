@@ -151,7 +151,7 @@ func (h *DonationHandler) HandleCallback(c *gin.Context) {
 	}
 
 	// Determine role
-	role := h.roleService.DetermineRole(user.ID)
+	role := h.roleService.DetermineRole(user.ID, user.Username)
 
 	// Create session
 	session, err := h.sessionStore.Create(user, role)

@@ -133,6 +133,8 @@ type DonationConfig struct {
 	QuotaAmount int64 `yaml:"quota-amount" json:"quota-amount"`
 	// AdminLinuxDoIDs is the list of Linux Do user IDs that have admin privileges.
 	AdminLinuxDoIDs []int `yaml:"admin-linux-do-ids" json:"admin-linux-do-ids"`
+	// AdminLinuxDoUsernames is the list of Linux Do usernames that have admin privileges.
+	AdminLinuxDoUsernames []string `yaml:"admin-linux-do-usernames" json:"admin-linux-do-usernames"`
 }
 
 // TLSConfig holds HTTPS server settings.

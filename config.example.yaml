@@ -281,3 +281,6 @@ ws-auth: false
 #   admin-linux-do-ids:    # List of Linux Do user IDs with admin privileges
 #     - 12345
 #     - 67890
+#   admin-linux-do-usernames:  # List of Linux Do usernames with admin privileges
+#     - "admin_user"
+#     - "another_admin"

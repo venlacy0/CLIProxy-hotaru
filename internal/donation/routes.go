@@ -34,7 +34,7 @@ func NewDonationModule(cfg *config.Config) (*DonationModule, error) {
 		return nil, err
 	}
 
-	roleService := NewRoleService(cfg.Donation.AdminLinuxDoIDs)
+	roleService := NewRoleService(cfg.Donation.AdminLinuxDoIDs, cfg.Donation.AdminLinuxDoUsernames)
 	linuxDoSvc := NewLinuxDoConnectService(cfg.LinuxDoConnect)
 	newAPISvc := NewNewAPIService()
 	logger := NewDonationLogger()
